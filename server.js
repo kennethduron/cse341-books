@@ -13,8 +13,8 @@ const startServer = async () => {
     app.listen(port, () => {
       console.log(`Server listening on port ${port}`);
     });
-  } catch (error) {
-    console.error('Failed to start server:', error);
+  } catch {
+    console.error('Failed to start server because the MongoDB connection failed.');
     process.exitCode = 1;
   }
 };

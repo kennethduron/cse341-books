@@ -1,6 +1,7 @@
 import { MongoClient } from 'mongodb';
 
 let database;
+let client;
 
 export const connectToDb = async () => {
   const connectionString = process.env.MONGODB_URI;
@@ -20,10 +21,15 @@ export const connectToDb = async () => {
     await connectedClient.connect();
     const connectedDatabase = connectedClient.db(databaseName);
     await connectedDatabase.command({ ping: 1 });
+    client = connectedClient;
     database = connectedDatabase;
     console.log('Connected to MongoDB.');
   } catch (error) {
-    await connectedClient.close();
+    try {
+      await connectedClient.close();
+    } catch {
+      // Preserve the original connection error.
+    }
     throw error;
   }
 };
@@ -34,4 +40,15 @@ export const getDb = () => {
   }
 
   return database;
+};
+
+export const disconnectFromDb = async () => {
+  if (!client) {
+    return;
+  }
+
+  const connectedClient = client;
+  client = undefined;
+  database = undefined;
+  await connectedClient.close();
 };
