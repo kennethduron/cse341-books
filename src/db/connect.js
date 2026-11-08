@@ -21,6 +21,10 @@ export const connectToDb = async () => {
     await connectedClient.connect();
     const connectedDatabase = connectedClient.db(databaseName);
     await connectedDatabase.command({ ping: 1 });
+    await Promise.all([
+      connectedDatabase.collection('books').createIndex({ id: 1 }, { unique: true }),
+      connectedDatabase.collection('authors').createIndex({ id: 1 }, { unique: true }),
+    ]);
     client = connectedClient;
     database = connectedDatabase;
     console.log('Connected to MongoDB.');
