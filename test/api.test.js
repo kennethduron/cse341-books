@@ -38,6 +38,9 @@ const fakeDatabase = {
   },
   collection: () => {
     return {
+      createIndex: async () => {
+        return 'id_1';
+      },
       find: () => {
         return {
           toArray: async () => {
