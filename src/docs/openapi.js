@@ -25,12 +25,33 @@ const authorUpdateSchema = {
 
 const bookSchema = {
   type: 'object',
-  required: ['id', 'author', 'title', 'publicationDate'],
+  required: ['id', 'authorId', 'title', 'publicationDate'],
   properties: {
     id: { type: 'string', example: 'b1' },
-    author: { type: 'string', example: 'George Orwell' },
+    authorId: { type: 'string', example: 'a1', description: 'References authors.id.' },
     title: { type: 'string', example: '1984' },
     publicationDate: { type: 'string', format: 'date', example: '1949-06-08' },
+  },
+};
+
+const bookInputSchema = {
+  type: 'object',
+  required: ['id', 'authorId', 'title', 'publicationDate'],
+  properties: {
+    id: { type: 'string', example: 'b4' },
+    authorId: { type: 'string', example: 'a1', description: 'Must match an existing authors.id.' },
+    title: { type: 'string', example: 'Animal Farm' },
+    publicationDate: { type: 'string', format: 'date', example: '1945-08-17' },
+  },
+};
+
+const bookUpdateSchema = {
+  type: 'object',
+  required: ['authorId', 'title', 'publicationDate'],
+  properties: {
+    authorId: { type: 'string', example: 'a1', description: 'Must match an existing authors.id.' },
+    title: { type: 'string', example: 'Updated Book Title' },
+    publicationDate: { type: 'string', format: 'date', example: '2026-02-20' },
   },
 };
 
@@ -78,6 +99,18 @@ const swaggerDocument = {
           500: internalError,
         },
       },
+      post: {
+        tags: ['Books'],
+        summary: 'Create a book',
+        description: 'The authorId must reference an existing authors.id. Duplicate custom IDs return 409.',
+        requestBody: requestBody('Book to create. The body must match the schema exactly.', { $ref: '#/components/schemas/BookInput' }),
+        responses: {
+          201: jsonResponse('Book created', { $ref: '#/components/schemas/Book' }),
+          400: jsonResponse('Invalid fields, date, or author reference', { $ref: '#/components/schemas/Error' }),
+          409: jsonResponse('Book ID already exists', { $ref: '#/components/schemas/Error' }),
+          500: internalError,
+        },
+      },
     },
     '/books/{id}': {
       get: {
@@ -86,6 +119,29 @@ const swaggerDocument = {
         parameters: [pathId('Book custom ID, for example b1')],
         responses: {
           200: jsonResponse('Book found', { $ref: '#/components/schemas/Book' }),
+          404: jsonResponse('Book not found', { $ref: '#/components/schemas/Error' }),
+          500: internalError,
+        },
+      },
+      put: {
+        tags: ['Books'],
+        summary: 'Update a book',
+        description: 'The route ID is immutable. authorId must reference an existing authors.id.',
+        parameters: [pathId('Book custom ID, for example b1')],
+        requestBody: requestBody('Updated book fields; do not include id.', { $ref: '#/components/schemas/BookUpdate' }),
+        responses: {
+          200: jsonResponse('Book updated', { $ref: '#/components/schemas/Book' }),
+          400: jsonResponse('Invalid fields, date, or author reference', { $ref: '#/components/schemas/Error' }),
+          404: jsonResponse('Book not found', { $ref: '#/components/schemas/Error' }),
+          500: internalError,
+        },
+      },
+      delete: {
+        tags: ['Books'],
+        summary: 'Delete a book',
+        parameters: [pathId('Book custom ID, for example b1')],
+        responses: {
+          204: { description: 'Book deleted; response body is empty' },
           404: jsonResponse('Book not found', { $ref: '#/components/schemas/Error' }),
           500: internalError,
         },
@@ -154,6 +210,8 @@ const swaggerDocument = {
       AuthorInput: { ...authorSchema, additionalProperties: false },
       AuthorUpdate: { ...authorUpdateSchema, additionalProperties: false },
       Book: { ...bookSchema, additionalProperties: false },
+      BookInput: { ...bookInputSchema, additionalProperties: false },
+      BookUpdate: { ...bookUpdateSchema, additionalProperties: false },
     },
   },
 };
