@@ -1,21 +1,27 @@
 import { connectToDb, disconnectFromDb, getDb } from './connect.js';
 
+const authors = [
+  { id: 'a1', name: 'George Orwell', birthYear: 1903 },
+  { id: 'a2', name: 'Jane Austen', birthYear: 1775 },
+  { id: 'a3', name: 'Harper Lee', birthYear: 1926 },
+];
+
 const books = [
   {
     id: 'b1',
-    author: 'George Orwell',
+    authorId: 'a1',
     title: '1984',
     publicationDate: '1949-06-08',
   },
   {
     id: 'b2',
-    author: 'Jane Austen',
+    authorId: 'a2',
     title: 'Pride and Prejudice',
     publicationDate: '1813-01-28',
   },
   {
     id: 'b3',
-    author: 'Harper Lee',
+    authorId: 'a3',
     title: 'To Kill a Mockingbird',
     publicationDate: '1960-07-11',
   },
@@ -25,6 +31,19 @@ const seedBooks = async () => {
   await connectToDb();
 
   const database = getDb();
+  const authorResult = await database.collection('authors').bulkWrite(
+    authors.map((author) => {
+      return {
+        updateOne: {
+          filter: { id: author.id },
+          update: { $setOnInsert: author },
+          upsert: true,
+        },
+      };
+    }),
+  );
+  console.log(`Authors seed complete. Inserted ${authorResult.upsertedCount} new records.`);
+
   const existingCollections = await database
     .listCollections({ name: 'books' }, { nameOnly: true })
     .toArray();

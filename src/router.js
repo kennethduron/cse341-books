@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { getBookByIdHandler, getBooksHandler } from './controllers/books.js';
+import {
+  createBookHandler,
+  deleteBookHandler,
+  getBookByIdHandler,
+  getBooksHandler,
+  updateBookHandler,
+} from './controllers/books.js';
 import {
   createAuthorHandler,
   deleteAuthorHandler,
@@ -12,6 +18,9 @@ const router = Router();
 
 router.get('/books', getBooksHandler);
 router.get('/books/:id', getBookByIdHandler);
+router.post('/books', createBookHandler);
+router.put('/books/:id', updateBookHandler);
+router.delete('/books/:id', deleteBookHandler);
 
 router.get('/authors', getAuthorsHandler);
 router.get('/authors/:id', getAuthorByIdHandler);

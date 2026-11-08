@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "swagger": "node scripts/validate-swagger.js",
-    "seed:authors": "node --env-file=.env src/db/seed-authors.js"
+    "seed:authors": "node --env-file=.env src/db/seed-authors.js",
+    "migrate:books": "node --env-file=.env src/db/migrate-books.js"
   },
   "repository": {
     "type": "git",

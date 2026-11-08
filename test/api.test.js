@@ -7,19 +7,19 @@ import { connectToDb } from '../src/db/connect.js';
 const books = [
   {
     id: 'b1',
-    author: 'George Orwell',
+    authorId: 'a1',
     title: '1984',
     publicationDate: '1949-06-08',
   },
   {
     id: 'b2',
-    author: 'Jane Austen',
+    authorId: 'a2',
     title: 'Pride and Prejudice',
     publicationDate: '1813-01-28',
   },
   {
     id: 'b3',
-    author: 'Harper Lee',
+    authorId: 'a3',
     title: 'To Kill a Mockingbird',
     publicationDate: '1960-07-11',
   },

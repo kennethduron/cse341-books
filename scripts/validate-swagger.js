@@ -7,12 +7,14 @@ assert.ok(swaggerDocument.paths['/authors/{id}']);
 assert.ok(swaggerDocument.paths['/books']);
 assert.ok(swaggerDocument.paths['/books/{id}']);
 
+let operationCount = 0;
 for (const [path, pathItem] of Object.entries(swaggerDocument.paths)) {
   for (const [method, operation] of Object.entries(pathItem)) {
     if (!['get', 'post', 'put', 'delete'].includes(method)) {
       continue;
     }
 
+    operationCount += 1;
     assert.ok(operation.summary, `${method.toUpperCase()} ${path} needs a summary`);
     assert.ok(operation.responses, `${method.toUpperCase()} ${path} needs responses`);
     if (['post', 'put'].includes(method)) {
@@ -21,4 +23,5 @@ for (const [path, pathItem] of Object.entries(swaggerDocument.paths)) {
   }
 }
 
-console.log(`Swagger document is valid: ${Object.keys(swaggerDocument.paths).length} paths checked.`);
+assert.equal(operationCount, 10, 'Swagger must document all five book and five author routes');
+console.log(`Swagger document is valid: ${operationCount} Books and Authors operations checked.`);

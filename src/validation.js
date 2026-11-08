@@ -22,3 +22,22 @@ export const isValidAuthor = (body, fields) => {
 
   return hasValidId && hasValidName && hasValidBirthYear;
 };
+
+const isValidDate = (value) => {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith('0000')) {
+    return false;
+  }
+
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+};
+
+export const isValidBook = (body, fields) => {
+  if (!hasExactFields(body, fields)) {
+    return false;
+  }
+
+  const hasValidId = !fields.includes('id') || isNonEmptyString(body.id);
+  return hasValidId && isNonEmptyString(body.authorId) && isNonEmptyString(body.title) &&
+    isValidDate(body.publicationDate);
+};
